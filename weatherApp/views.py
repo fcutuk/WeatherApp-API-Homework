@@ -1,6 +1,7 @@
 from django.http import HttpResponse
 import urllib.request, json
 from django.shortcuts import render
+from django.http import JsonResponse
 
 
 def index(request):
@@ -8,22 +9,15 @@ def index(request):
 
 def current_weather(request):
     if request.method == 'POST': 
-        city = request.POST['city']
-        
-        coordinates = urllib.request.urlopen('http://api.openweathermap.org/geo/1.0/direct?q='+ city + '&appid=352350089cd0815f99eb9fc26635d7fd')
+        city = str(request.POST.get('city'))
 
-        # list_of_cordinates = json.load(coordinates)
-        # c = {
-        #     "latitude": str(list_of_cordinates['lat']),
-        #     "longitude": str(list_of_cordinates['long'])
-        # }
+        coordinates = urllib.request.urlopen('http://api.openweathermap.org/geo/1.0/direct?q=' + city + '&limit=5&units=metric&appid=352350089cd0815f99eb9fc26635d7fd')
+        coordinates_data = coordinates.read().decode('utf-8')
+        list_of_coordinates = json.loads(coordinates_data)
+        latitude = str(list_of_coordinates[0]['lat'])
+        longitude = str(list_of_coordinates[0]['lon'])
 
-        list_of_coordinates = json.load(coordinates)
-        latitude = list_of_coordinates[0]['lat']
-        longitude = list_of_coordinates[0]['lon']
-
-
-        source = request.urlopen('https://api.openweathermap.org/data/2.5/weather?lat='+ latitude 
+        source = urllib.request.urlopen('https://api.openweathermap.org/data/2.5/weather?lat='+ latitude 
                                  + '&lon=' + longitude + '&appid=352350089cd0815f99eb9fc26635d7fd').read()
         list_of_data = json.loads(source)
 
@@ -41,27 +35,22 @@ def current_weather(request):
     else:
         final_data = {}
 
-    return render(request, "templates/current_weather_template/index.html", final_data)
+    return render(request, "current_weather_template/index.html", final_data)
 
 def forcast_weather(request):
     if request.method == 'POST': 
-        city = request.POST['city']
+        city = str(request.POST.get('city'))
         
         coordinates = urllib.request.urlopen('http://api.openweathermap.org/geo/1.0/direct?q='+ city + '&appid=352350089cd0815f99eb9fc26635d7fd')
 
-        # list_of_cordinates = json.load(coordinates)
-        # c = {
-        #     "latitude": str(list_of_cordinates['lat']),
-        #     "longitude": str(list_of_cordinates['long'])
-        # }
-
-        list_of_coordinates = json.load(coordinates)
-        latitude = list_of_coordinates[0]['lat']
-        longitude = list_of_coordinates[0]['lon']
+        coordinates_data = coordinates.read().decode('utf-8')
+        list_of_coordinates = json.loads(coordinates_data)
+        latitude = str(list_of_coordinates[0]['lat'])
+        longitude = str(list_of_coordinates[0]['lon'])
 
 
-        source = request.urlopen('https://api.openweathermap.org/data/2.5/forecast/daily?lat='+ latitude + 
-                                 '&lon=' + longitude +'&cnt=' + 10 + '&appid=352350089cd0815f99eb9fc26635d7fd').read()
+        source = urllib.request.urlopen('https://api.openweathermap.org/data/2.5/forecast/daily?lat='+ latitude + 
+                                 '&lon=' + longitude +'&type=hour&appid=352350089cd0815f99eb9fc26635d7fd').read()
         list_of_data = json.loads(source)
 
         final_data={ 
@@ -79,24 +68,19 @@ def forcast_weather(request):
     else:
         final_data = {}
 
-    return render(request, "templates/forcast_weather_template/index.html", final_data)
+    return render(request, "forcast_weather_template/index.html", final_data)
 
 
 def history_weather(request):
     if request.method == 'POST': 
-        city = request.POST['city']
+        city = str(request.POST.get('city'))
         
         coordinates = urllib.request.urlopen('http://api.openweathermap.org/geo/1.0/direct?q='+ city + '&appid=352350089cd0815f99eb9fc26635d7fd').read()
 
-        # list_of_cordinates = json.load(coordinates)
-        # c = {
-        #     "latitude": str(list_of_cordinates['lat']),
-        #     "longitude": str(list_of_cordinates['long'])
-        # }
-
-        list_of_coordinates = json.load(coordinates)
-        latitude = list_of_coordinates[0]['lat']
-        longitude = list_of_coordinates[0]['lon']
+        coordinates_data = coordinates.read().decode('utf-8')
+        list_of_coordinates = json.loads(coordinates_data)
+        latitude = str(list_of_coordinates[0]['lat'])
+        longitude = str(list_of_coordinates[0]['lon'])
 
 
         source = request.urlopen('https://history.openweathermap.org/data/2.5/history/city?lat' + latitude + '&lon=' + 
@@ -122,5 +106,4 @@ def history_weather(request):
     else:
         final_data = {}
 
-    return render(request, "templates/history_weather_template/index.html", final_data)
-
+    return render(request, "history_weather_template/index.html", final_data)
