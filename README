@@ -1,0 +1,11 @@
+Weather API
+The Weather API provides access to current weather conditions, weather forecasts, and historical weather data for specific locations. It integrates with a weather API provider to fetch the necessary weather information.
+
+Routes created are weatherApp/weather-current, weatherApp/weather-forecast, weatherApp/weather-history
+
+To start project 
+1. Clone the repository: https://github.com/fcutuk/WeatherApp-API-Homework
+2. Install the required dependencies: pip install -r requirements.txt
+3. Set up the database and migrate: python manage.py migrate
+5. Start the development server: python manage.py runserver
+6. Access the API endpoints locally at http://localhost:8000/
